@@ -15,14 +15,14 @@
 }
 
 .videoPlayer {
-    height: 50%;
+    height: 70%;
     width: 100%;
 
     background-color: lightblue;
 }
 
 .videoList {
-    height: 50%;
+    height: 30%;
     width: 100%;
 
     background-color: lightcoral;

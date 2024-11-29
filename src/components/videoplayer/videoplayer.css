@@ -4,4 +4,63 @@
 
     margin: 0;
     padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+    /* Asegura que el padding y los bordes no afecten las dimensiones */
+    overflow: hidden;
+    /* Evita que cualquier desbordamiento se muestre */
+}
+
+.videoData {
+    height: 20%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-size: 2em;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.iframe {
+    height: 80%;
+    width: 100%;
+    background-color: white;
+    border-top: solid;
+    box-sizing: border-box;
+    overflow: hidden;
+    /* Evita el scroll en el contenedor */
+}
+
+iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.data {
+    height: 100%;
+    width: 70%;
+    background-color: pink;
+}
+
+.addMedia {
+    height: 100%;
+    width: 30%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

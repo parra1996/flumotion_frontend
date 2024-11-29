@@ -6,12 +6,11 @@ import { useEffect, useState } from 'react';
 function Home() {
 
   const [messageVideoList, setMessageVideoList] = useState({});
-
-  useEffect(() => {
-  }, []);
+  const [currentVideo, setCurrentVideo] = useState({});
 
   useEffect(() => {
     console.log(messageVideoList);
+    setCurrentVideo(messageVideoList);
   }, [messageVideoList]);
 
   const handleVideoList = (msg) => {
@@ -21,7 +20,7 @@ function Home() {
   return (
     <div className='home'>
       <div className="videoPlayer">
-        <VideoPlayer currentVideo={setMessageVideoList} />
+        <VideoPlayer currentVideo={currentVideo} />
       </div>
       <div className="videoList">
         <VideoList startPlayVideo={handleVideoList} />
