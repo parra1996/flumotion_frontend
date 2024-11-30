@@ -6,16 +6,14 @@ import { useEffect, useState } from 'react';
 function Home() {
 
   const [messageVideoList, setMessageVideoList] = useState({});
-  const [currentVideo, setCurrentVideo] = useState({});
+  const [currentVideoP, setCurrentVideoP] = useState({});
   const [messageVideoPlayer, setMessageVideoPlayer] = useState({});
 
   useEffect(() => {
-    console.log(messageVideoList);
-    setCurrentVideo(messageVideoList);
+    setCurrentVideoP(messageVideoList);
   }, [messageVideoList]);
 
   useEffect(() => {
-    console.log("cambio de valor mi pana", messageVideoPlayer);
   }, [messageVideoPlayer]);
 
   const handleVideoList = (msg) => {
@@ -33,7 +31,10 @@ function Home() {
   return (
     <div className='home'>
       <div className="videoPlayer">
-        <VideoPlayer currentVideo={currentVideo} updateVideoPlayer={handleVideoPlayer} />
+        <VideoPlayer
+          currentVideo={currentVideoP}
+          updateVideoPlayer={handleVideoPlayer}
+        />
       </div>
       <div className="videoList">
         <VideoList

@@ -1,87 +1,76 @@
 import './videolist.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-// import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PropTypes from 'prop-types';
 
-// eslint-disable-next-line react/prop-types
 function VideoList({ startPlayVideo, updateVideoList, stateNewList }) {
 
     const [medias, setMedias] = useState([]);
-    // const theme = useTheme();
+    const [activeCard, setActiveCard] = useState(null);
 
     useEffect(() => {
-        console.log("empezo el beta");
         BringMediaList();
     }, []);
 
     useEffect(() => {
-        console.log("se activo en el videolist");
         if (updateVideoList == true) {
             setMedias([]);
             BringMediaList();
             stateNewList(false);
         }
-    }, [updateVideoList, stateNewList]);
+    }, [updateVideoList]);
 
     const BringMediaList = async () => {
-
-        const medias = await axios.get('http://localhost:3000/getmedias');
-
-        if (medias.data) {
-            setMedias(medias.data);
+        try {
+            const medias = await axios.get('http://localhost:3000/getmedias');
+            if (medias.data) {
+                setMedias(medias.data);
+            }
+        } catch (err) {
+            console.log(err);
         }
     };
 
     const playVideo = (media) => {
-        console.log("se ejecuto el pana", media);
+        setActiveCard(media.id);
         startPlayVideo(media);
     };
 
     return (
         <div className='VideoList'>
             {
-                medias != [] ? medias.map(media => {
+                medias.length > 0 ? medias.map(media => {
+                    const isActive = media.id === activeCard;
                     return (
-                        <Card sx={{ display: 'flex' }} key={media.id} className='card'>
-                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <CardContent sx={{ flex: '1 0 auto' }}>
-                                    <Typography component="div" variant="h5">
-                                        {media.title}
-                                    </Typography>
-                                    <Typography
-                                        variant="subtitle1"
-                                        component="div"
-                                        sx={{ color: 'text.secondary' }}
-                                    >
-                                        {media.description}
-                                    </Typography>
-                                </CardContent>
-                                <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-                                    <IconButton aria-label="play/pause" onClick={() => playVideo(media)}>
-                                        <PlayArrowIcon sx={{ height: 38, width: 38 }} />
-                                    </IconButton>
-                                </Box>
-                            </Box>
+                        <Card sx={{ display: 'flex', }} key={media.id} className={`card ${isActive ? 'active' : ''}`} onClick={() => playVideo(media)}>
                             <CardMedia
+                                sx={{ width: '100%', height: 'auto', objectFit: 'contain' }}
                                 component="img"
-                                sx={{ width: 151 }}
                                 image={media.thumbnail.thumbnailroute}
-                                alt="Live from space album cover"
+                                alt={media.title}
                             />
+                            <CardContent sx={{ padding: 0 }} className='cardcontent'>
+                                <Typography >
+                                    <span>{media.title}</span>
+                                </Typography>
+                            </CardContent>
                         </Card>
                     );
                 })
                     : "no videos available"
             }
-        </div>
+        </div >
     );
 }
+
+VideoList.propTypes = {
+    startPlayVideo: PropTypes.func.isRequired,
+    updateVideoList: PropTypes.object.isRequired,
+    stateNewList: PropTypes.func.isRequired,
+};
 
 export default VideoList;

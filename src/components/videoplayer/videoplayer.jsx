@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './videoplayer.css';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,20 +7,26 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import PropTypes from 'prop-types';
+import Snackbar from '@mui/material/Snackbar';
 
 import axios from 'axios';
 
-// eslint-disable-next-line react/prop-types
 function VideoPlayer({ currentVideo, updateVideoPlayer }) {
 
   const videoPlayerUrl = 'https://cdnapi.codev8.net/cms-player/default.iframe?injectSrc=';
 
   const [videoData, setVideoData] = useState({});
   const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const prevCurrentVideoRef = useRef();
 
   useEffect(() => {
-    setVideoData(currentVideo);
-    console.log(currentVideo, "esto es video actualizado");
+    if (prevCurrentVideoRef.current !== currentVideo) {
+      setVideoData(currentVideo);
+      prevCurrentVideoRef.current = currentVideo;
+    }
   }, [currentVideo]);
 
   const handleClickOpen = () => {
@@ -56,6 +62,7 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
     try {
       const response = await axios.post('http://localhost:3000/addmedias', newMediaData);
       if (response.status == 201) {
+        setOpenSnackbar(true);
         updateVideoPlayer(true);
       }
 
@@ -65,12 +72,19 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
     }
   };
 
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
   return (
     <div className='VideoPlayer'>
       <div className="iframe">
         <iframe
-          // eslint-disable-next-line react/prop-types
-          src={videoData ? `${videoPlayerUrl}${currentVideo.mediaroute}` : videoPlayerUrl}
+          src={Object.keys(videoData).length > 0 ? `${videoPlayerUrl}${videoData.mediaroute}` : videoPlayerUrl}
           width="100%"
           height="100%"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
@@ -81,15 +95,15 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
       <div className="videoData">
         <div className='data'>
           {
-            videoData ? <>
+            Object.keys(videoData).length > 0 ? <>
               Título: {videoData.title}<br></br>
               Descripcion: {videoData.description}<br></br>
             </>
-              : "no hay data"
+              : ""
           }
         </div>
         <div className='addMedia'>
-          <Button variant="contained" color='success' onClick={handleClickOpen}>add media</Button>
+          <Button variant="contained" color='error' onClick={handleClickOpen}>add media</Button>
         </div>
       </div>
       <Dialog
@@ -210,8 +224,19 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
           <Button type="submit">Add</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message="media added to your collection"
+      />
     </div>
   );
 }
+
+VideoPlayer.propTypes = {
+  currentVideo: PropTypes.object.isRequired,
+  updateVideoPlayer: PropTypes.func.isRequired,
+};
 
 export default VideoPlayer;

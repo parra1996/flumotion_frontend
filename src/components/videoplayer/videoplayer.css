@@ -11,9 +11,7 @@
     align-items: center;
 
     box-sizing: border-box;
-    /* Asegura que el padding y los bordes no afecten las dimensiones */
     overflow: hidden;
-    /* Evita que cualquier desbordamiento se muestre */
 }
 
 .videoData {
@@ -26,8 +24,10 @@
     align-items: center;
 
     color: white;
+
     font-size: 2em;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 600;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .iframe {
@@ -37,7 +37,6 @@
     border-top: solid;
     box-sizing: border-box;
     overflow: hidden;
-    /* Evita el scroll en el contenedor */
 }
 
 iframe {
@@ -53,7 +52,22 @@ iframe {
 .data {
     height: 100%;
     width: 70%;
-    background-color: pink;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding-left: 1em;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: black;
+    font-size: 20;
+    font-weight: 400;
 }
 
 .addMedia {
@@ -63,4 +77,6 @@ iframe {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background-color: transparent;
 }
