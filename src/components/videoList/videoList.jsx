@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 // eslint-disable-next-line react/prop-types
-function VideoList({ startPlayVideo }) {
+function VideoList({ startPlayVideo, updateVideoList, stateNewList }) {
 
     const [medias, setMedias] = useState([]);
     // const theme = useTheme();
@@ -20,6 +20,15 @@ function VideoList({ startPlayVideo }) {
         console.log("empezo el beta");
         BringMediaList();
     }, []);
+
+    useEffect(() => {
+        console.log("se activo en el videolist");
+        if (updateVideoList == true) {
+            setMedias([]);
+            BringMediaList();
+            stateNewList(false);
+        }
+    }, [updateVideoList, stateNewList]);
 
     const BringMediaList = async () => {
 

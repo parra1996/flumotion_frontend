@@ -11,31 +11,17 @@ import TextField from '@mui/material/TextField';
 import axios from 'axios';
 
 // eslint-disable-next-line react/prop-types
-function VideoPlayer({ currentVideo }) {
+function VideoPlayer({ currentVideo, updateVideoPlayer }) {
 
   const videoPlayerUrl = 'https://cdnapi.codev8.net/cms-player/default.iframe?injectSrc=';
+
   const [videoData, setVideoData] = useState({});
   const [open, setOpen] = useState(false);
-  const [mediaData, setMediaData] = useState({
-    title: '', description: '', duration: '', tags: '', filedata: { bitrate: 0, fileSize: 0, filename: '' }, thumbnail: { name: '', filename: '' }
-  });
 
   useEffect(() => {
     setVideoData(currentVideo);
     console.log(currentVideo, "esto es video actualizado");
   }, [currentVideo]);
-
-  useEffect(() => {
-    console.log(mediaData);
-    createMedia(mediaData);
-  }, [mediaData]);
-
-  const createMedia = async (data) => {
-    const newMedia = await axios.post('http://localhost:3000/addmedias', data);
-    if (newMedia) {
-      console.log(newMedia);
-    }
-  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -45,6 +31,39 @@ function VideoPlayer({ currentVideo }) {
     setOpen(false);
   };
 
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const formJson = Object.fromEntries(formData.entries());
+
+    const newMediaData = {
+      title: formJson.title,
+      description: formJson.description,
+      duration: Number(formJson.duration),
+      tags: formJson.tags,
+      filedata: {
+        bitrate: Number(formJson.filedatabitrate),
+        fileSize: Number(formJson.filedatafileSize),
+        filename: formJson.filename
+      },
+      thumbnail: {
+        name: formJson.thumbnailname,
+        filename: formJson.thumbnailfilename
+      }
+    };
+
+    try {
+      const response = await axios.post('http://localhost:3000/addmedias', newMediaData);
+      if (response.status == 201) {
+        updateVideoPlayer(true);
+      }
+
+      handleClose();
+    } catch (error) {
+      console.error("Error adding media:", error);
+    }
+  };
 
   return (
     <div className='VideoPlayer'>
@@ -78,27 +97,7 @@ function VideoPlayer({ currentVideo }) {
         onClose={handleClose}
         PaperProps={{
           component: 'form',
-          onSubmit: (event) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            setMediaData({
-              title: formJson.title,
-              description: formJson.description,
-              duration: formJson.duration,
-              tags: formJson.tags,
-              filedata: {
-                bitrate: formJson.filedatabitrate,
-                fileSize: formJson.filedatafileSize,
-                filename: formJson.filename
-              },
-              thumbnail: {
-                name: formJson.thumbnailname,
-                filename: formJson.thumbnailfilename
-              }
-            });
-            handleClose();
-          },
+          onSubmit: handleFormSubmit
         }}
       >
         <DialogTitle>Add</DialogTitle>
