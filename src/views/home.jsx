@@ -13,8 +13,8 @@ function Home() {
     setCurrentVideoP(messageVideoList);
   }, [messageVideoList]);
 
-  useEffect(() => {
-  }, [messageVideoPlayer]);
+  // useEffect(() => {
+  // }, [messageVideoPlayer]);
 
   const handleVideoList = (msg) => {
     setMessageVideoList(msg);

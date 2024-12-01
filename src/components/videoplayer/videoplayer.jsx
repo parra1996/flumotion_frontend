@@ -6,19 +6,22 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Button } from '@mui/material';
-import TextField from '@mui/material/TextField';
+// import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
-import Snackbar from '@mui/material/Snackbar';
-
+import SnackBar from '../snackbar';
 import axios from 'axios';
+import FormTextField from '../formTextField';
+
+const videoPlayerUrl = 'https://cdnapi.codev8.net/cms-player/default.iframe?injectSrc=';
 
 function VideoPlayer({ currentVideo, updateVideoPlayer }) {
-
-  const videoPlayerUrl = 'https://cdnapi.codev8.net/cms-player/default.iframe?injectSrc=';
 
   const [videoData, setVideoData] = useState({});
   const [open, setOpen] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarError, setSnackbarError] = useState(false);
+  const snackbarColor = 'FF0000';
 
   const prevCurrentVideoRef = useRef();
 
@@ -62,13 +65,20 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
     try {
       const response = await axios.post('http://localhost:3000/addmedias', newMediaData);
       if (response.status == 201) {
+        setSnackbarMessage("media added to your collection");
         setOpenSnackbar(true);
         updateVideoPlayer(true);
+      } else {
+        setSnackbarMessage("there was a problem, please try again");
+        setSnackbarError(true);
+        setOpenSnackbar(true);
       }
 
       handleClose();
     } catch (error) {
       console.error("Error adding media:", error);
+      setSnackbarMessage("there was a problem, please try again");
+      setSnackbarError(true);
     }
   };
 
@@ -76,7 +86,6 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpenSnackbar(false);
   };
 
@@ -95,11 +104,11 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
       <div className="videoData">
         <div className='data'>
           {
-            Object.keys(videoData).length > 0 ? <>
+            Object.keys(videoData).length > 0 &&
+            <>
               Título: {videoData.title}<br></br>
               Descripcion: {videoData.description}<br></br>
             </>
-              : ""
           }
         </div>
         <div className='addMedia'>
@@ -114,121 +123,32 @@ function VideoPlayer({ currentVideo, updateVideoPlayer }) {
           onSubmit: handleFormSubmit
         }}
       >
-        <DialogTitle>Add</DialogTitle>
+        <DialogTitle>Add a media</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Here you can add a new media video
+            Here you can add a new media video to your collection
           </DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="title"
-            name="title"
-            label="title"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="description"
-            name="description"
-            label="description"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="duration"
-            name="duration"
-            label="duración"
-            type="number"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="tags"
-            name="tags"
-            label="tags"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="filedatabitrate"
-            name="filedatabitrate"
-            label="bit rate"
-            type="number"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="filedatafileSize"
-            name="filedatafileSize"
-            label="file size"
-            type="number"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="filename"
-            name="filename"
-            label="file name"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="thumbnailname"
-            name="thumbnailname"
-            label="thumbnail name"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="thumbnailfilename"
-            name="thumbnailfilename"
-            label="thumbnail filename"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
+          <FormTextField id="title" name="title" label="title" type="text" />
+          <FormTextField id="description" name="description" label="description" type="text" />
+          <FormTextField id="duration" name="duration" label="duration" type="number" />
+          <FormTextField id="tags" name="tags" label="tags" type="text" />
+          <FormTextField id="filedatabitrate" name="filedatabitrate" label="bit rate" type="number" />
+          <FormTextField id="filedatafileSize" name="filedatafileSize" label="file size" type="number" />
+          <FormTextField id="filename" name="filename" label="file name" type="text" />
+          <FormTextField id="thumbnailname" name="thumbnailname" label="thumbnail name" type="text" />
+          <FormTextField id="thumbnailfilename" name="thumbnailfilename" label="thumbnail filename" type="text" />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit">Add</Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
+      <SnackBar
+        isOpen={openSnackbar}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        message="media added to your collection"
+        message={snackbarMessage}
+        bgc={snackbarError ? snackbarColor : null}
       />
     </div>
   );
